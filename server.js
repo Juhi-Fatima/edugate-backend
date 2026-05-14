@@ -25,4 +25,9 @@ app.post('/verify', (req, res) => {
     }
 });
 
-app.listen(5000, () => console.log("EduGate Brain: ONLINE at Port 5000"));
+// This tells the app to use Azure's port, or 8080 as a fallback
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+});
