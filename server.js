@@ -2,32 +2,40 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-app.use(cors());
+// 1. OPEN THE SECURITY GATE (CORS)
+// This tells Azure: "Let my website talk to this server!"
+app.use(cors()); 
 app.use(express.json());
 
-// This is our list of Teachers with their secret codes
+// 2. TEACHER DATA
 const teacherDatabase = [
     { name: "Miss Sara", pin: "1111" },
     { name: "Miss Zoha", pin: "2222" },
     { name: "Mr. Arif", pin: "3333" }
 ];
 
+// 3. THE "WAKE UP" SIGNAL (Crucial Fix)
+// When the frontend checks if the brain is online, this responds "YES!"
+app.get('/', (req, res) => {
+    res.json({ status: "online", message: "Server is awake and ready!" });
+});
+
+// 4. THE PIN CHECKER
 app.post('/verify', (req, res) => {
     const { enteredPin } = req.body;
     
-    // Look for the teacher who has this PIN
     const teacher = teacherDatabase.find(t => t.pin === enteredPin);
     
     if (teacher) {
-        res.send({ status: "APPROVED", teacherName: teacher.name }); 
+        // Use .json instead of .send for better compatibility
+        res.json({ status: "APPROVED", teacherName: teacher.name }); 
     } else {
-        res.send({ status: "DENIED" });   
+        res.json({ status: "DENIED" });   
     }
 });
 
-// This tells the app to use Azure's port, or 8080 as a fallback
+// 5. AZURE CONNECTION
 const PORT = process.env.PORT || 8080;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 });
